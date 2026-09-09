@@ -1130,13 +1130,15 @@ func (h *Handler) SendSecret(ctx context.Context, params json.RawMessage) (any, 
 //  4. Linux + $DISPLAY + kdialog → kdialog --password
 //  5. Fallback    → /dev/tty (works in plain terminals, not inside TUI)
 //
-// Each step is bounded by guiDialogTimeout. A step that fails for an
-// environment reason (binary missing, dialog crashed) falls through to the
+// Each step except WSL2 is bounded by guiDialogTimeout. A step that fails for
+// an environment reason (binary missing, dialog crashed) falls through to the
 // next step, but a step the operator genuinely never answered (errSecretTimeout)
-// returns immediately instead of cascading — the pty-mcp server processes MCP
-// requests on a single synchronous loop, so every additional fallback attempt
-// (especially /dev/tty, which hijacks whatever terminal the AI host itself is
-// running in) is more time the whole session appears hung to the operator.
+// returns immediately instead of cascading, so every additional fallback
+// attempt (especially /dev/tty, which hijacks whatever terminal the AI host
+// itself is running in) doesn't add more time the session appears hung to the
+// operator. WSL2's Get-Credential dialog (readSecretPowerShell) has no
+// timeout at all: killing the process that owns it wedges the hosting
+// terminal, which is worse than just waiting — see that function for why.
 const guiDialogTimeout = 60 * time.Second
 
 var errSecretTimeout = errors.New("timed out waiting for secret input: operator did not respond")
@@ -1296,19 +1298,43 @@ func readSecretPowerShell(ctx context.Context, prompt string) ([]byte, error) {
 		`$cred = Get-Credential -UserName "secret" -Message '%s'; $cred.GetNetworkCredential().Password`,
 		escaped,
 	)
-	// Get-Credential has no native timeout; bound it the same way as the
-	// other GUI dialogs so an unanswered prompt can't block the server
-	// forever. Deriving from ctx (not context.Background()) means the
-	// dialog process is also killed immediately if the request is
-	// cancelled, instead of lingering for up to guiDialogTimeout regardless.
-	// Killing powershell.exe also closes the dialog window it owns.
-	dialogCtx, cancel := context.WithTimeout(ctx, guiDialogTimeout)
-	defer cancel()
-	out, err := exec.CommandContext(dialogCtx, "powershell.exe", "-NoProfile", "-Command", cmdStr).Output()
-	if err != nil {
-		return nil, classifySecretDialogErr(dialogCtx, err)
+	// Unlike the other GUI dialogs, this one is never bounded by a timeout and
+	// its process is never killed by us. Confirmed (2026-09) that SIGKILLing a
+	// WSL-interop-launched process that owns an open Windows GUI window wedges
+	// the *hosting terminal* itself — unresponsive to input, scrolling, and
+	// text selection — reproduced with a bare `powershell.exe -Command
+	// Get-Credential` plus `kill -9` from another window, no pty-mcp involved
+	// at all. The freeze outlives the process too: killing whatever's left
+	// afterward (even the entire pty-mcp/Claude Code process tree) does not
+	// undo it: only the operator closing that terminal does. The operator
+	// dismissing the dialog themselves (OK or Cancel) exits powershell.exe
+	// normally and does not trigger the freeze, so we just wait for that.
+	//
+	// If the tool call itself is cancelled (ctx.Done()), we still return to
+	// the caller right away rather than blocking on the dialog — but the
+	// subprocess is deliberately left running instead of killed, for the same
+	// reason. It exits on its own once the operator answers or closes it; a
+	// later send_secret call on the same server shows a second, independent
+	// dialog in the meantime rather than waiting for this orphaned one.
+	cmd := exec.Command("powershell.exe", "-NoProfile", "-Command", cmdStr)
+	type result struct {
+		out []byte
+		err error
 	}
-	return []byte(strings.TrimRight(string(out), "\r\n")), nil
+	done := make(chan result, 1)
+	go func() {
+		out, err := cmd.Output()
+		done <- result{out, err}
+	}()
+	select {
+	case r := <-done:
+		if r.err != nil {
+			return nil, r.err
+		}
+		return []byte(strings.TrimRight(string(r.out), "\r\n")), nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 }
 
 func readSecretOsascript(ctx context.Context, prompt string) ([]byte, error) {
