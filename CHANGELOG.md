@@ -2,6 +2,11 @@
 
 All notable changes to pty-mcp are documented here.
 
+## [v0.11.9] - 2026-09-09
+
+### Fixed
+- On WSL2, `send_secret`'s 60s dialog timeout (or cancelling the call, e.g. ESC in Claude Code) killed the `powershell.exe Get-Credential` process to close the dialog. Confirmed this SIGKILLs across the WSL↔Windows interop boundary while it owns an open GUI window, which freezes the *hosting terminal itself* — unresponsive to input, scrolling, and selection, and not recoverable by killing anything afterward (reproduced with a bare `powershell.exe -Command Get-Credential` + `kill -9` from another window, no pty-mcp involved). WSL2's dialog no longer has a timeout and is never force-closed by pty-mcp; it now just waits for the operator to answer or click Cancel themselves, which exits normally. Other platforms (macOS/zenity/kdialog/tty) are unaffected and keep the 60s timeout.
+
 ## [v0.11.8] - 2026-08-17
 
 ### Fixed
