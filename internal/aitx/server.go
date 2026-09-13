@@ -34,9 +34,10 @@ func RunServer(socketPath string, idleSeconds int) error {
 	}
 
 	// Set restrictive umask before Listen to prevent TOCTOU race on socket permissions.
-	oldUmask := syscall.Umask(0077)
+	// No-op on platforms without umask (Windows).
+	oldUmask := setUmask(0077)
 	ln, err := net.Listen("unix", socketPath)
-	syscall.Umask(oldUmask)
+	setUmask(oldUmask)
 	if err != nil {
 		return fmt.Errorf("listen %s: %w", socketPath, err)
 	}

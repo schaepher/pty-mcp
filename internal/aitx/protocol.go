@@ -3,11 +3,9 @@ package aitx
 
 import (
 	"encoding/json"
-	"fmt"
-	"os"
 )
 
-var SocketPath = fmt.Sprintf("/tmp/ai-tmux-%d.sock", os.Getuid())
+var SocketPath = defaultSocketPath()
 
 // Request from client to server
 type Request struct {

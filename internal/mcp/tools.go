@@ -1227,7 +1227,7 @@ func linuxDesktopEnv() map[string]string {
 	// find the user bus; an MCP host that strips the environment drops this
 	// too, so default it to systemd's well-known path before querying.
 	if env["XDG_RUNTIME_DIR"] == "" {
-		env["XDG_RUNTIME_DIR"] = fmt.Sprintf("/run/user/%d", os.Getuid())
+		env["XDG_RUNTIME_DIR"] = fmt.Sprintf("/run/user/%d", currentUID())
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
