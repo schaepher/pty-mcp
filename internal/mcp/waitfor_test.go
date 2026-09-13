@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/buffer"
 )
 
 func TestWaitForPattern_ImmediateMatch(t *testing.T) {

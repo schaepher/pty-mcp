@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // newHTTPTestServer starts an httptest server wrapping the Streamable HTTP

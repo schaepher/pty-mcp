@@ -13,10 +13,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/raychao-oao/pty-mcp/internal/audit"
-	"github.com/raychao-oao/pty-mcp/internal/config"
-	"github.com/raychao-oao/pty-mcp/internal/mcp"
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/config"
+	"github.com/schaepher/pty-mcp/internal/mcp"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 var version = "dev"

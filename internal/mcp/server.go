@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // Version is set from main via ldflags (-X main.version) forwarded at startup.

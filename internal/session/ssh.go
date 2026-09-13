@@ -19,8 +19,8 @@ import (
 	ssh_config "github.com/kevinburke/ssh_config"
 	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/knownhosts"
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
-	"github.com/raychao-oao/pty-mcp/internal/pty"
+	"github.com/schaepher/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/pty"
 )
 
 type SSHConfig struct {
@@ -382,7 +382,7 @@ func NewRemoteSSHSession(cfg SSHConfig, command string, attachID string) (*Remot
 	verSess.Close()
 	if runErr != nil {
 		client.Close()
-		return nil, fmt.Errorf("ai-tmux not found on %s — install it first (see: https://github.com/raychao-oao/pty-mcp)", cfg.Host)
+		return nil, fmt.Errorf("ai-tmux not found on %s — install it first (see: https://github.com/schaepher/pty-mcp)", cfg.Host)
 	}
 	remoteVer := parseAiTmuxVersion(string(out))
 	if remoteVer == "" {

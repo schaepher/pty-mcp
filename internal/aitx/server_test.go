@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/aitx"
+	"github.com/schaepher/pty-mcp/internal/aitx"
 )
 
 func TestServer_ListEmpty(t *testing.T) {

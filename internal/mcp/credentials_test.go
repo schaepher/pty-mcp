@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/raychao-oao/cred-proto/pkg/credproto"
-	"github.com/raychao-oao/pty-mcp/internal/audit"
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // fakeSession is a minimal session.Session for testing InjectSecret.

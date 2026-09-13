@@ -20,10 +20,10 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/term"
 
-	"github.com/raychao-oao/pty-mcp/internal/audit"
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
-	"github.com/raychao-oao/pty-mcp/internal/pty"
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/pty"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // UnmarshalMcpArgs decodes MCP tool arguments into target struct using weak type coercion.

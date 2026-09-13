@@ -5,8 +5,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/raychao-oao/pty-mcp/internal/aitx"
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/aitx"
+	"github.com/schaepher/pty-mcp/internal/buffer"
 )
 
 // LocalSession wraps aitx.PTYSession to implement the Session interface for a local interactive terminal

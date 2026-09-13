@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"go.bug.st/serial"
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
-	"github.com/raychao-oao/pty-mcp/internal/pty"
+	"github.com/schaepher/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/pty"
 )
 
 type SerialSession struct {

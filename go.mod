@@ -1,4 +1,4 @@
-module github.com/raychao-oao/pty-mcp
+module github.com/schaepher/pty-mcp
 
 go 1.26.1
 

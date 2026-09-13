@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/aitx"
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/aitx"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // fakeServer creates in-process pipes that simulate the SSH stdin/stdout channel

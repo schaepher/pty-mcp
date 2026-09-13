@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/audit"
 )
 
 // captureServer returns a test HTTP server and a channel that receives each

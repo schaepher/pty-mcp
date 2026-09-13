@@ -11,7 +11,7 @@ import (
 
 	"github.com/raychao-oao/cred-proto/pkg/consumersdk"
 	"github.com/raychao-oao/cred-proto/pkg/credproto"
-	"github.com/raychao-oao/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/audit"
 )
 
 // pendingCred holds a session keypair alongside the bundle it was created with.

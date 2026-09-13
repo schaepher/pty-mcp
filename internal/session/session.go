@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/raychao-oao/pty-mcp/internal/buffer"
+	"github.com/schaepher/pty-mcp/internal/buffer"
 )
 
 // Session represents an interactive terminal session

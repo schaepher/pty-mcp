@@ -8,9 +8,9 @@ import (
 	"io"
 	"testing"
 
-	"github.com/raychao-oao/pty-mcp/internal/aitx"
-	"github.com/raychao-oao/pty-mcp/internal/audit"
-	"github.com/raychao-oao/pty-mcp/internal/session"
+	"github.com/schaepher/pty-mcp/internal/aitx"
+	"github.com/schaepher/pty-mcp/internal/audit"
+	"github.com/schaepher/pty-mcp/internal/session"
 )
 
 // fakeAiTmux creates in-process pipes simulating an ai-tmux server's stdin/stdout.

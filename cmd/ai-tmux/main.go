@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/raychao-oao/pty-mcp/internal/aitx"
+	"github.com/schaepher/pty-mcp/internal/aitx"
 )
 
 var version = "dev"
