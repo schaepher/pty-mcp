@@ -4,6 +4,15 @@
 #
 #   doas sh install-alpine-goinstall.sh [version] [http-addr]
 #
+# Or fetch and run it directly. Fresh Alpine ships busybox wget (not curl),
+# so the wget form is the one that works out of the box:
+#
+#   wget -qO- https://raw.githubusercontent.com/schaepher/pty-mcp/main/scripts/install-alpine-goinstall.sh | doas sh
+#
+# If curl is available (or installed first):
+#
+#   curl -fsSL <same-url> | doas sh
+#
 # Defaults: version=v1.0.0, http-addr=0.0.0.0:8765
 #
 # What it does:
@@ -29,7 +38,7 @@ GO_VERSION="${GO_VERSION:-1.27.1}"
 GOPROXY="${GOPROXY:-https://goproxy.cn,https://goproxy.io,direct}"
 MODULE="github.com/schaepher/pty-mcp"
 
-[ "$(id -u)" = 0 ] || { echo "error: run as root (doas sh $0 ...)" >&2; exit 1; }
+[ "$(id -u)" = 0 ] || { echo "error: must run as root (doas sh install-alpine-goinstall.sh)" >&2; exit 1; }
 
 case "$(uname -m)" in
     x86_64|amd64)  GO_ARCH=amd64 ;;
