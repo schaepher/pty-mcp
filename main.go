@@ -32,6 +32,8 @@ func main() {
 	auditURL  := fs.String("audit-url", "", "Audit collector URL (overrides config file)")
 	auditUser := fs.String("audit-user", "", "Operator identity for audit log (overrides config file)")
 	auditMode := fs.String("audit-mode", "", "Audit mode: best-effort or strict (overrides config file)")
+	httpAddr  := fs.String("http-addr", "", "Serve MCP over Streamable HTTP on this address (e.g. :8080) instead of stdio")
+	httpToken := fs.String("http-token", "", "Bearer token required by the HTTP transport (or PTY_MCP_HTTP_TOKEN)")
 	showVer   := fs.Bool("version", false, "Show version")
 
 	fs.Usage = func() {
@@ -39,6 +41,7 @@ func main() {
 		fmt.Printf("Version: %s\n\n", version)
 		fmt.Println("Usage:")
 		fmt.Println("  pty-mcp [options]              Run MCP server (stdio)")
+		fmt.Println("  pty-mcp --http-addr :8080      Run MCP server (Streamable HTTP)")
 		fmt.Println("  pty-mcp audit init             Create config file and generate token")
 		fmt.Println("  pty-mcp audit serve [options]  Run audit log collector")
 		fmt.Println()
@@ -95,6 +98,20 @@ func main() {
 	mgr := session.NewManager(1800) // 30 min idle timeout
 	mcp.Version = version
 	handler := mcp.NewHandler(mgr, auditClient)
+
+	if *httpAddr != "" {
+		token := *httpToken
+		if env := os.Getenv("PTY_MCP_HTTP_TOKEN"); token == "" && env != "" {
+			token = env
+		}
+		if token == "" {
+			log.Println("pty-mcp: WARNING: --http-addr without a token exposes full shell access to anyone who can reach the port")
+		}
+		if err := mcp.ServeHTTP(handler, *httpAddr, token); err != nil {
+			log.Fatalf("pty-mcp: http server: %v", err)
+		}
+		return
+	}
 	mcp.Serve(handler)
 }
 
