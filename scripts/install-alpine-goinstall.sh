@@ -5,15 +5,20 @@
 #   doas sh install-alpine-goinstall.sh [version] [http-addr]
 #
 # Or fetch and run it directly. Fresh Alpine ships busybox wget (not curl),
-# so the wget form is the one that works out of the box:
+# so the wget form is the one that works out of the box. Fetch the script from
+# a tag URL and pass that same tag so the installer and the installed code
+# agree:
 #
-#   wget -qO- https://raw.githubusercontent.com/schaepher/pty-mcp/main/scripts/install-alpine-goinstall.sh | doas sh
+#   V=v1.0.1
+#   wget -qO- https://raw.githubusercontent.com/schaepher/pty-mcp/$V/scripts/install-alpine-goinstall.sh | doas sh -s $V
 #
 # If curl is available (or installed first):
 #
-#   curl -fsSL <same-url> | doas sh
+#   curl -fsSL <same-url> | doas sh -s $V
 #
-# Defaults: version=v1.0.0, http-addr=0.0.0.0:8765
+# The version must be passed as $1 or $VERSION; there is no default, so the
+# script never silently installs code from a different tag than the one it was
+# fetched from. http-addr defaults to 0.0.0.0:8765.
 #
 # What it does:
 #   1. apk add bash
@@ -31,12 +36,20 @@
 # goproxy.io as a fallback makes `go install <module>@<new-tag>` resolve.
 set -eu
 
-VERSION="${1:-v1.0.0}"
+VERSION="${1:-${VERSION:-}}"
 HTTP_ADDR="${2:-0.0.0.0:8765}"
 RUN_USER="${PTY_MCP_USER:-mcp}"
 GO_VERSION="${GO_VERSION:-1.27.1}"
 GOPROXY="${GOPROXY:-https://goproxy.cn,https://goproxy.io,direct}"
 MODULE="github.com/schaepher/pty-mcp"
+
+if [ -z "$VERSION" ]; then
+    echo "error: no version given." >&2
+    echo "       pass the tag and fetch the script from that same tag, e.g.:" >&2
+    echo "       wget -qO- https://raw.githubusercontent.com/schaepher/pty-mcp/v1.0.1/scripts/install-alpine-goinstall.sh | doas sh -s v1.0.1" >&2
+    exit 1
+fi
+echo "==> target version: ${VERSION}"
 
 [ "$(id -u)" = 0 ] || { echo "error: must run as root (doas sh install-alpine-goinstall.sh)" >&2; exit 1; }
 
