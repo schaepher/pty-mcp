@@ -1,0 +1,39 @@
+#!/sbin/openrc-run
+#
+# OpenRC service for pty-mcp running as an MCP Streamable HTTP server.
+#
+# Install:
+#   install -m 0755 pty-mcp.initd /etc/init.d/pty-mcp
+#   cat > /etc/conf.d/pty-mcp <<EOF
+#   PTY_MCP_HTTP_ADDR="0.0.0.0:8765"
+#   PTY_MCP_HTTP_TOKEN="<random token>"
+#   PTY_MCP_USER="mcp"
+#   EOF
+#   chmod 600 /etc/conf.d/pty-mcp
+#   rc-update add pty-mcp default && rc-service pty-mcp start
+
+name="pty-mcp"
+description="pty-mcp MCP server (Streamable HTTP)"
+
+: "${PTY_MCP_HTTP_ADDR:=0.0.0.0:8765}"
+: "${PTY_MCP_HTTP_TOKEN:=}"
+: "${PTY_MCP_USER:=mcp}"
+
+command="/usr/local/bin/pty-mcp"
+command_args="--http-addr ${PTY_MCP_HTTP_ADDR}"
+command_user="${PTY_MCP_USER}"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/${RC_SVCNAME}.log"
+error_log="/var/log/${RC_SVCNAME}.log"
+
+# Token is passed via the environment so it never shows up in `ps`.
+export PTY_MCP_HTTP_TOKEN
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath --file --owner "${PTY_MCP_USER}" --mode 0640 "${output_log}"
+}
